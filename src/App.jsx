@@ -1,32 +1,28 @@
 import "@fontsource/inter"
 import Nav from "./components/Nav"
 import Hero from "./components/Hero"
-import StatsBar from "./components/StatsBar"
-import About from "./components/About"
+import Philosophy from "./components/Philosophy"
+import ImageGrid from "./components/ImageGrid"
+import TechSection from "./components/TechSection"
+import GalleryCards from "./components/GalleryCards"
 import Services from "./components/Services"
-import WhyUs from "./components/WhyUs"
+import StatsBar from "./components/StatsBar"
 import Testimonials from "./components/Testimonials"
-import WhyChoose from "./components/WhyChoose"
-import FAQ from "./components/FAQ"
-import CtaSection from "./components/CtaSection"
 import Footer from "./components/Footer"
 
 export default function App() {
   return (
-    <div className="bg-bg text-black font-sans">
+    <main className="min-h-screen bg-background">
       <Nav />
-      <main>
-        <Hero />
-        <StatsBar />
-        <About />
-        <Services />
-        <WhyUs />
-        <Testimonials />
-        <WhyChoose />
-        <FAQ />
-        <CtaSection />
-      </main>
+      <Hero />
+      <Philosophy />
+      <ImageGrid />
+      <TechSection />
+      <GalleryCards />
+      <Services />
+      <StatsBar />
+      <Testimonials />
       <Footer />
-    </div>
+    </main>
   )
 }

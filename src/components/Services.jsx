@@ -1,206 +1,111 @@
-import { motion } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
 
-const services = [
+const packages = [
   {
-    num: "/001",
-    title: "Gantt de Obras",
-    desc: "Cronograma visual con fases, hitos y dependencias. Detectá desvíos antes de que ocurran.",
-    gradient: "from-stone-800 to-stone-700",
-    accent: "#1A6B5C",
+    id: 1,
+    name: "Residencial",
+    description: "Casas personalizadas y edificios multifamiliares hasta 500m² con gestión integral y materiales premium.",
+    price: "Desde $85.000",
+    image: "https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=600&q=80",
   },
   {
-    num: "/002",
-    title: "Gestión de Tareas",
-    desc: "Asignación a equipos, responsables y prioridades. Cada tarea tiene su dueño.",
-    gradient: "from-stone-900 to-stone-800",
-    accent: "#2D5A4A",
+    id: 2,
+    name: "Comercial",
+    description: "Oficinas y desarrollos comerciales diseñados para rendimiento, estética y valor a largo plazo.",
+    price: "Desde $250.000",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
   },
   {
-    num: "/003",
-    title: "Control de Presupuesto",
-    desc: "Presupuesto planificado vs. real, con alertas automáticas ante desvíos.",
-    gradient: "from-zinc-800 to-zinc-700",
-    accent: "#1A6B5C",
-  },
-  {
-    num: "/004",
-    title: "App de Campo",
-    desc: "El equipo en terreno accede desde el celular. Sin papeles, sin excusas.",
-    gradient: "from-neutral-800 to-neutral-700",
-    accent: "#2D5A4A",
+    id: 3,
+    name: "Empresarial",
+    description: "Desarrollos industriales y de uso mixto a gran escala, construidos a medida con equipos dedicados.",
+    price: "A consultar",
+    image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=600&q=80",
   },
 ]
 
-// Placeholder mockup content per service
-function ServiceMockup({ index, accent }) {
-  if (index === 0) {
-    return (
-      <div className="p-5 h-full flex flex-col gap-3">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 rounded-full bg-white/40" />
-          <div className="h-2 w-20 bg-white/20 rounded-pill" />
-        </div>
-        {["Diseño", "Permisos", "Fundación", "Estructura", "Terminación"].map((phase, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <span className="text-white/30 text-[9px] w-16 shrink-0">{phase}</span>
-            <div className="flex-1 h-3 bg-white/5 relative">
-              <div
-                className="h-full transition-all"
-                style={{
-                  width: `${[90, 70, 55, 30, 10][i]}%`,
-                  backgroundColor: i < 2 ? accent : "rgba(255,255,255,0.2)"
-                }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+function FadeImage({ src, alt, className }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect() } },
+      { threshold: 0.1 }
     )
-  }
-  if (index === 1) {
-    return (
-      <div className="p-5 h-full flex flex-col gap-2">
-        {[
-          { t: "Revisar planos estructura", s: "done", u: "MG" },
-          { t: "Reunión con proveedor", s: "in-progress", u: "LR" },
-          { t: "Informe semanal equipo", s: "pending", u: "CV" },
-          { t: "Aprobación presupuesto", s: "pending", u: "AP" },
-        ].map((task, i) => (
-          <div key={i} className="flex items-center gap-2 bg-white/5 p-2 border border-white/5">
-            <div
-              className="w-3 h-3 shrink-0 border"
-              style={{
-                borderColor: task.s === "done" ? accent : "rgba(255,255,255,0.2)",
-                backgroundColor: task.s === "done" ? accent : "transparent"
-              }}
-            />
-            <span className="text-white/50 text-[10px] flex-1 truncate">{task.t}</span>
-            <div
-              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[7px] font-bold shrink-0"
-              style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
-            >
-              {task.u[0]}
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-  if (index === 2) {
-    return (
-      <div className="p-5 h-full flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { l: "Planificado", v: "$4.2M", c: "white" },
-            { l: "Ejecutado", v: "$3.1M", c: accent },
-          ].map((item, i) => (
-            <div key={i} className="bg-white/5 p-3 border border-white/10">
-              <p className="text-white/30 text-[9px] mb-1">{item.l}</p>
-              <p className="font-bold" style={{ color: item.c, fontSize: "14px" }}>{item.v}</p>
-            </div>
-          ))}
-        </div>
-        {/* Progress bar */}
-        <div>
-          <div className="flex justify-between text-[9px] text-white/30 mb-1">
-            <span>Ejecución presupuestaria</span>
-            <span>74%</span>
-          </div>
-          <div className="h-2 bg-white/10 w-full">
-            <div className="h-full w-[74%]" style={{ backgroundColor: accent }} />
-          </div>
-        </div>
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-          <span className="text-white/40 text-[9px]">Alerta: 3 rubros por encima del plan</span>
-        </div>
-      </div>
-    )
-  }
-  if (index === 3) {
-    return (
-      <div className="p-5 h-full flex flex-col gap-3">
-        {/* Phone mockup */}
-        <div className="w-24 h-40 mx-auto bg-white/5 border border-white/15 relative overflow-hidden">
-          <div className="h-2 bg-white/10 mx-4 mt-2 rounded-pill" />
-          <div className="p-2 flex flex-col gap-1.5 mt-2">
-            {["Check cimentación", "Foto progreso", "Reporte diario"].map((item, i) => (
-              <div key={i} className="flex items-center gap-1.5 bg-white/5 p-1">
-                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: accent }} />
-                <span className="text-white/40 text-[8px]">{item}</span>
-              </div>
-            ))}
-          </div>
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-            <div className="w-8 h-1 bg-white/20 rounded-pill" />
-          </div>
-        </div>
-      </div>
-    )
-  }
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <img
+      ref={ref}
+      src={src}
+      alt={alt}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.7s ease-out",
+      }}
+    />
+  )
 }
 
 export default function Services() {
   return (
-    <section id="funciones" className="bg-bg py-32 border-t border-black/8">
-      <div className="max-w-[1320px] mx-auto px-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="flex items-end justify-between mb-16 flex-wrap gap-4"
-        >
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-black/40 mb-3">
-              Funciones
-            </p>
-            <h2
-              className="font-heading font-bold leading-[1.05]"
-              style={{ fontSize: "clamp(36px, 4vw, 60px)" }}
-            >
-              Nuestras Funciones
-            </h2>
-          </div>
-          <a
-            href="#contacto"
-            className="text-sm font-medium text-black hover:text-black/60 transition-colors flex items-center gap-1"
-          >
-            Empezar ahora <span aria-hidden>→</span>
-          </a>
-        </motion.div>
+    <section id="services" className="bg-background">
+      <div className="px-6 py-20 md:px-12 lg:px-20 md:py-10">
+        <h2 className="text-3xl font-medium tracking-tight text-foreground md:text-4xl">
+          Nuestros Paquetes
+        </h2>
+      </div>
 
-        {/* Services grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-black/10">
-          {services.map((service, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              whileHover={{ y: -4 }}
-              className="bg-bg p-8 flex flex-col gap-6 group cursor-pointer"
-            >
-              {/* Image placeholder */}
-              <div
-                className={`w-full aspect-video bg-gradient-to-br ${service.gradient} overflow-hidden`}
-              >
-                <ServiceMockup index={i} accent={service.accent} />
+      <div className="pb-24">
+        {/* Mobile: Horizontal Carousel */}
+        <div className="flex gap-6 overflow-x-auto px-6 pb-4 md:hidden snap-x snap-mandatory scrollbar-hide">
+          {packages.map((pkg) => (
+            <div key={pkg.id} className="group flex-shrink-0 w-[75vw] snap-center">
+              <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-secondary">
+                <FadeImage
+                  src={pkg.image}
+                  alt={pkg.name}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
               </div>
-
-              {/* Content */}
-              <div className="flex items-start gap-6">
-                <span className="text-black/20 text-sm font-mono shrink-0 mt-0.5">{service.num}</span>
-                <div>
-                  <h3 className="font-heading font-semibold text-xl mb-2 group-hover:text-accent transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm text-black/55 leading-relaxed">{service.desc}</p>
+              <div className="py-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium leading-snug text-foreground">{pkg.name}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{pkg.description}</p>
+                  </div>
+                  <span className="text-lg font-medium text-foreground">{pkg.price}</span>
                 </div>
               </div>
-            </motion.div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: Grid */}
+        <div className="hidden md:grid md:grid-cols-3 gap-8 md:px-12 lg:px-20">
+          {packages.map((pkg) => (
+            <div key={pkg.id} className="group">
+              <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-secondary">
+                <FadeImage
+                  src={pkg.image}
+                  alt={pkg.name}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              <div className="py-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium leading-snug text-foreground">{pkg.name}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{pkg.description}</p>
+                  </div>
+                  <span className="font-medium text-foreground text-2xl">{pkg.price}</span>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

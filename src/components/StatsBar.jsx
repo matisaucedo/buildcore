@@ -1,77 +1,69 @@
-import { useEffect, useRef, useState } from "react"
-import { motion, useInView } from "framer-motion"
-
-function Counter({ target, suffix = "", prefix = "" }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true })
-
-  useEffect(() => {
-    if (!inView) return
-    const start = 0
-    const end = target
-    const duration = 1800
-    const startTime = performance.now()
-
-    const tick = (now) => {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      // ease-out cubic
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(start + (end - start) * eased))
-      if (progress < 1) requestAnimationFrame(tick)
-    }
-
-    requestAnimationFrame(tick)
-  }, [inView, target])
-
-  return (
-    <span ref={ref}>
-      {prefix}{count}{suffix}
-    </span>
-  )
-}
+import { useEffect, useRef, useState, useCallback } from "react"
 
 const stats = [
-  { value: 120, suffix: "+", label: "Obras gestionadas" },
-  { value: 98, suffix: "%", label: "Satisfacción de clientes" },
-  { value: 2019, suffix: "", label: "Fundado · 6 años de experiencia" },
+  { label: "Proyectos Completados", value: "150+" },
+  { label: "Años de Experiencia", value: "12" },
+  { label: "Entrega a Tiempo", value: "98%" },
+  { label: "Valor Construido", value: "$2B+" },
 ]
 
 export default function StatsBar() {
-  return (
-    <section className="bg-bgDark py-24">
-      <div className="max-w-[1320px] mx-auto px-6">
-        {/* Stats grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.12 }}
-              className="bg-bgDark px-10 py-12 flex flex-col gap-2"
-            >
-              <p className="font-heading font-extrabold text-white leading-none"
-                 style={{ fontSize: "clamp(48px, 5vw, 72px)" }}>
-                <Counter target={stat.value} suffix={stat.suffix} />
-              </p>
-              <p className="text-white/40 text-sm">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
+  const videoRef = useRef(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const rafRef = useRef(null)
 
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-white/30 text-sm uppercase tracking-[0.2em] mt-10 text-center"
-        >
-          Built with experience and craft
-        </motion.p>
+  const updateParallax = useCallback(() => {
+    if (!videoRef.current) return
+    const rect = videoRef.current.getBoundingClientRect()
+    const windowHeight = window.innerHeight
+    const videoBottom = rect.bottom
+
+    if (videoBottom > 0 && rect.top < windowHeight) {
+      const progress = 1 - (rect.top + rect.height / 2) / (windowHeight + rect.height)
+      setScrollProgress(Math.max(0, Math.min(1, progress)))
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(updateParallax)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    updateParallax()
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [updateParallax])
+
+  const parallaxY = (scrollProgress - 0.5) * 30
+
+  return (
+    <section className="bg-background">
+      <div ref={videoRef} className="relative aspect-[16/9] w-full md:aspect-[21/9] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=80"
+          alt="Torre de oficinas moderna"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            transform: `scale(1.15) translate3d(0, ${parallaxY}px, 0) translateZ(0)`,
+            backfaceVisibility: "hidden",
+            willChange: "transform",
+          }}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 border-t border-border md:grid-cols-4">
+        {stats.map((stat, i) => (
+          <div
+            key={stat.label}
+            className={`border-border p-6 md:p-8 text-center border-b border-r ${i % 2 === 1 ? "border-r-0" : ""} md:border-b-0 ${i < 3 ? "md:border-r" : "md:border-r-0"}`}
+          >
+            <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+            <p className="font-medium text-foreground text-3xl md:text-5xl">{stat.value}</p>
+          </div>
+        ))}
       </div>
     </section>
   )
